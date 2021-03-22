@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    hostname: nomadic_db
+    networks:
+      - nod_alpha
+    volumes:
+      - nod-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_DATABASE:
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+
+  nomadic_blog:
+    container_name: nomadic_blog
+    depends_on:
+      - mysql
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - nod_alpha
+    ports:
+      - "6080:80"
+      - "6443:443"
+    restart: always
+    environment:
+      MYSQL_HOST: nomadic_db
+
+
+networks:
+  nod_alpha:
+
+volumes:
+  nod-data:
